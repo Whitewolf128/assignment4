@@ -45,9 +45,9 @@ export const getAllLoans = async (): Promise<Loan[]> => {
 };
 
 /**
- * Creates a new Project
- * @param ProjectData - The data for the new Project (name and description)
- * @returns The created Project with generated ID
+ * Creates a new Loan
+ * @param LoanData - The data for the new Loan (name and description)
+ * @returns The created Loan with generated ID
  */
 
 export const createLoan = async (loanData: {
@@ -66,9 +66,9 @@ export const createLoan = async (loanData: {
 };
 
 /**
- * Retrieves a single Project by ID from the database
- * @param id - This ID of the Project to retrieve
- * @returns The Project if found
+ * Retrieves a single Loan by ID from the database
+ * @param id - This ID of the Loan to retrieve
+ * @returns The Loan if found
  */
 
 export const getLoanById = async (id: string): Promise<Loan> => {
@@ -88,4 +88,35 @@ export const getLoanById = async (id: string): Promise<Loan> => {
     } as unknown as Loan;
 
     return structuredClone(Loan);
+};
+
+/**
+ * Updates (replaces) an existing Loan
+ * @param id - The ID of the Loan to update
+ * @param LoanData - The fields to updates (name and/or description)
+ * @returns The updated Loan
+ * @throws Error if Loan with given ID is not found
+ */
+
+export const updateLoan = async (
+    id: string,
+    loanData: Pick<Loan, "applicant" | "status" | "amount">
+): Promise<Loan> => {
+    // check if the Loan exists before updating
+    const Loan: Loan = await getLoanById(id);
+    if (!Loan) {
+        throw new Error(`Project with ID ${id} not found`);
+    }
+
+    const updateLoan: Loan  = {
+        ...Loan,
+    };
+
+    // I went for the simple option to only update defined values, you could also use an Object method like Object.entries() to be less verbose
+    if (loanData.applicant !== undefined) updateLoan.applicant = loanData.applicant;
+    if(loanData.status !== undefined) updateLoan.status = loanData.status;
+    if(loanData.amount !== undefined) updateLoan.amount = loanData.amount;
+    await updateDocument<Loan>(COLLECTION, id, updateLoan);
+
+    return structuredClone(updateLoan);
 };
