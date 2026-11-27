@@ -64,3 +64,28 @@ export const createLoan = async (loanData: {
 
     return structuredClone({ id: LoanId, ...newLoan } as Loan);
 };
+
+/**
+ * Retrieves a single Project by ID from the database
+ * @param id - This ID of the Project to retrieve
+ * @returns The Project if found
+ */
+
+export const getLoanById = async (id: string): Promise<Loan> => {
+    const doc: DocumentSnapshot | null = await getDocumentById(COLLECTION, id);
+
+    if (!doc) {
+        throw new Error(`Loan with ID ${id} not found`);
+    }
+
+    const data: DocumentData | undefined = doc.data();
+    const Loan: Loan = {
+        id: doc.id,
+        ...data,
+        createdAt: data?.createdAt instanceof Timestamp
+            ? data.createdAt.toDate()
+            : data?.createdAt,
+    } as unknown as Loan;
+
+    return structuredClone(Loan);
+};
