@@ -19,8 +19,8 @@ import {
 const COLLECTION: string = "loans";
 
 /**
- * Retrieves all projects from storage
- * @returns Array of all projects
+ * Retrieves all loans from storage
+ * @returns Array of all loans
  */
 
 export const getAllLoans = async (): Promise<Loan[]> => {
@@ -105,7 +105,7 @@ export const updateLoan = async (
     // check if the Loan exists before updating
     const Loan: Loan = await getLoanById(id);
     if (!Loan) {
-        throw new Error(`Project with ID ${id} not found`);
+        throw new Error(`Loan with ID ${id} not found`);
     }
 
     const updateLoan: Loan  = {
@@ -119,4 +119,20 @@ export const updateLoan = async (
     await updateDocument<Loan>(COLLECTION, id, updateLoan);
 
     return structuredClone(updateLoan);
+};
+
+/**
+ * Deletes an Loan from storage
+ * @param id - The ID of the Loan to delete
+ * @throws Error if Loan with given ID is not found
+ */
+
+export const deleteLoan = async (id: string): Promise<void> => {
+    // check if the Loan exists before deleting
+    const Loan: Loan = await getLoanById(id);
+    if (!Loan) {
+        throw new Error(`Loan with ID ${id} not found`);
+    }
+
+    await deleteDocument(COLLECTION, id);
 };
