@@ -43,3 +43,24 @@ export const getAllLoans = async (): Promise<Loan[]> => {
         throw error;
     }
 };
+
+/**
+ * Creates a new Project
+ * @param ProjectData - The data for the new Project (name and description)
+ * @returns The created Project with generated ID
+ */
+
+export const createLoan = async (loanData: {
+    name: string;
+    status: string
+}): Promise<Loan> => {
+    const dateNow = new Date();
+    const newLoan: Partial<Loan> = {
+        ...loanData,
+        createdAt: dateNow,
+    };
+
+    const LoanId: string = await createDocument<Loan>(COLLECTION, newLoan);
+
+    return structuredClone({ id: LoanId, ...newLoan } as Loan);
+};
